@@ -1,8 +1,11 @@
 package com.example.energymanagement.model.domain;
 
+import lombok.Data;
+
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+@Data
 public class ServiceLocation {
 
     private Integer sId;
@@ -35,80 +38,16 @@ public class ServiceLocation {
         this.zipCode = zipCode;
     }
 
-    public Integer getsId() {
-        return sId;
-    }
-
-    public void setsId(Integer sId) {
-        this.sId = sId;
-    }
-
-    public Integer getcId() {
-        return cId;
-    }
-
-    public void setcId(Integer cId) {
-        this.cId = cId;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public LocalDateTime getMoveInDate() {
-        return moveInDate;
-    }
-
-    public void setMoveInDate(LocalDateTime moveInDate) {
-        this.moveInDate = moveInDate;
-    }
-
-    public Integer getSize() {
-        return size;
-    }
-
-    public void setSize(Integer size) {
-        this.size = size;
-    }
-
-    public Integer getBedroomNum() {
-        return bedroomNum;
-    }
-
-    public void setBedroomNum(Integer bedroomNum) {
-        this.bedroomNum = bedroomNum;
-    }
-
-    public Integer getOccupantNum() {
-        return occupantNum;
-    }
-
-    public void setOccupantNum(Integer occupantNum) {
-        this.occupantNum = occupantNum;
-    }
-
-    public String getZipCode() {
-        return zipCode;
-    }
-
-    public void setZipCode(String zipCode) {
-        this.zipCode = zipCode;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof ServiceLocation that)) return false;
-        return Objects.equals(getsId(), that.getsId()) && Objects.equals(getcId(), that.getcId()) && Objects.equals(getAddress(), that.getAddress()) && Objects.equals(getMoveInDate(), that.getMoveInDate()) && Objects.equals(getSize(), that.getSize()) && Objects.equals(getBedroomNum(), that.getBedroomNum()) && Objects.equals(getOccupantNum(), that.getOccupantNum()) && Objects.equals(getZipCode(), that.getZipCode());
+        return Objects.equals(getSId(), that.getSId()) && Objects.equals(getCId(), that.getCId()) && Objects.equals(getAddress(), that.getAddress()) && Objects.equals(getMoveInDate(), that.getMoveInDate()) && Objects.equals(getSize(), that.getSize()) && Objects.equals(getBedroomNum(), that.getBedroomNum()) && Objects.equals(getOccupantNum(), that.getOccupantNum()) && Objects.equals(getZipCode(), that.getZipCode());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getsId(), getcId(), getAddress(), getMoveInDate(), getSize(), getBedroomNum(), getOccupantNum(), getZipCode());
+        return Objects.hash(getSId(), getCId(), getAddress(), getMoveInDate(), getSize(), getBedroomNum(), getOccupantNum(), getZipCode());
     }
 
     @Override
