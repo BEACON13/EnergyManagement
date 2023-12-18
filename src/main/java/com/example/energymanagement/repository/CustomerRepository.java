@@ -2,6 +2,7 @@ package com.example.energymanagement.repository;
 
 import com.example.energymanagement.model.domain.Customer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -22,16 +23,19 @@ public class CustomerRepository {
         String sql = "SELECT * " +
                 "FROM customer " +
                 "WHERE email = ?";
-
+        try {
         return jdbcTemplate.queryForObject(sql, new Object[]{email}, (rs, rowNum) ->
                 new Customer(
-                        rs.getInt("c_id"),
+                        rs.getInt("cid"),
                         rs.getString("name"),
                         rs.getString("email"),
                         rs.getString("billing_address"),
                         rs.getString("phone"),
                         rs.getString("password")
                 ));
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
     }
 
     public void insertCustomer(Customer customer) {

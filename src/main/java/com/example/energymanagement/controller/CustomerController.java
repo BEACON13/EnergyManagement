@@ -19,7 +19,7 @@ import java.util.Map;
 public class CustomerController {
 
     @Autowired
-    CustomerService customerService;
+    private CustomerService customerService;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody CustomerBaseParam param) {

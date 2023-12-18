@@ -77,4 +77,20 @@ public class ServiceLocationRepository {
                 ));
     }
 
+    public List<ServiceLocation> listByCustomerId(Integer customerId) {
+        String sql = "SELECT * " +
+                "FROM service_location " +
+                "WHERE cid = ?";
+        return jdbcTemplate.query(sql, new Object[]{customerId}, (rs, rowNum) ->
+                new ServiceLocation(
+                        rs.getInt("s_id"),
+                        rs.getInt("c_id"),
+                        rs.getString("address"),
+                        rs.getTimestamp("move_in_date").toLocalDateTime(),
+                        rs.getInt("size"),
+                        rs.getInt("bedroom_num"),
+                        rs.getInt("occupant_num"),
+                        rs.getString("zipcode")
+                ));
+    }
 }
