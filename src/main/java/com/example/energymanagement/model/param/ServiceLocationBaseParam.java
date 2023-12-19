@@ -1,21 +1,13 @@
-package com.example.energymanagement.model.domain;
+package com.example.energymanagement.model.param;
 
-import lombok.Data;
+import com.example.energymanagement.model.domain.ServiceLocation;
 
 import java.time.LocalDate;
 import java.util.Objects;
 
-@Data
-public class ServiceLocation {
-
-    /**
-     * service location id
-     */
+public class ServiceLocationBaseParam {
     private Integer sId;
 
-    /**
-     * customer id
-     */
     private Integer cId;
 
     private String address;
@@ -30,10 +22,10 @@ public class ServiceLocation {
 
     private String zipcode;
 
-    public ServiceLocation() {
+    public ServiceLocationBaseParam() {
     }
 
-    public ServiceLocation(Integer sId, Integer cId, String address, LocalDate moveInDate, Integer size, Integer bedroomNum, Integer occupantNum, String zipcode) {
+    public ServiceLocationBaseParam(Integer sId, Integer cId, String address, LocalDate moveInDate, Integer size, Integer bedroomNum, Integer occupantNum, String zipcode) {
         this.sId = sId;
         this.cId = cId;
         this.address = address;
@@ -41,6 +33,70 @@ public class ServiceLocation {
         this.size = size;
         this.bedroomNum = bedroomNum;
         this.occupantNum = occupantNum;
+        this.zipcode = zipcode;
+    }
+
+    public Integer getSId() {
+        return sId;
+    }
+
+    public void setSId(Integer sId) {
+        this.sId = sId;
+    }
+
+    public Integer getCId() {
+        return cId;
+    }
+
+    public void setCId(Integer cId) {
+        this.cId = cId;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public LocalDate getMoveInDate() {
+        return moveInDate;
+    }
+
+    public void setMoveInDate(LocalDate moveInDate) {
+        this.moveInDate = moveInDate;
+    }
+
+    public Integer getSize() {
+        return size;
+    }
+
+    public void setSize(Integer size) {
+        this.size = size;
+    }
+
+    public Integer getBedroomNum() {
+        return bedroomNum;
+    }
+
+    public void setBedroomNum(Integer bedroomNum) {
+        this.bedroomNum = bedroomNum;
+    }
+
+    public Integer getOccupantNum() {
+        return occupantNum;
+    }
+
+    public void setOccupantNum(Integer occupantNum) {
+        this.occupantNum = occupantNum;
+    }
+
+    public String getZipcode() {
+        return zipcode;
+    }
+
+    public void setZipcode(String zipcode) {
         this.zipcode = zipcode;
     }
 

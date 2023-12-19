@@ -21,6 +21,12 @@ public class CustomerController {
     @Autowired
     private CustomerService customerService;
 
+    /**
+     * login
+     *
+     * @param param the login info
+     * @return the token
+     */
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody CustomerBaseParam param) {
         Customer customer = customerService.login(param.getEmail(), param.getPassword());
@@ -32,6 +38,11 @@ public class CustomerController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
     }
 
+    /**
+     * register
+     * @param param the register info
+     * @return the token
+     */
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody CustomerBaseParam param) {
         Customer customer = customerService.findByEmail(param.getEmail());

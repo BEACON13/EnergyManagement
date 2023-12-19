@@ -18,9 +18,13 @@ public class ServiceLocationRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public void insertServiceLocation(ServiceLocation serviceLocation) {
-        String sql = "INSERT INTO service_location (cid,address,move_in_date,size,bedroom_num,occupant_num,zipcode) VALUES (?, ?, ?, ?, ?, ?, ?)";
-        jdbcTemplate.update(sql, serviceLocation.getCId(), serviceLocation.getAddress(), serviceLocation.getMoveInDate(), serviceLocation.getSize(), serviceLocation.getBedroomNum(), serviceLocation.getOccupantNum(), serviceLocation.getZipCode());
+    public boolean insertServiceLocation(ServiceLocation serviceLocation) {
+        String sql = "INSERT INTO service_location (cid,address,move_in_date,size,bedroom_num,occupant_num,zipcode) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?)";
+        jdbcTemplate.update(sql, serviceLocation.getCId(), serviceLocation.getAddress(), serviceLocation.getMoveInDate(),
+                serviceLocation.getSize(), serviceLocation.getBedroomNum(), serviceLocation.getOccupantNum(),
+                serviceLocation.getZipcode());
+        return true;
     }
 
     public void updateServiceLocation(ServiceLocation serviceLocation) {
@@ -50,9 +54,9 @@ public class ServiceLocationRepository {
             sql.append("occupant_num = ?, ");
             params.add(serviceLocation.getOccupantNum());
         }
-        if (serviceLocation.getZipCode() != null) {
+        if (serviceLocation.getZipcode() != null) {
             sql.append("zipcode = ?, ");
-            params.add(serviceLocation.getZipCode());
+            params.add(serviceLocation.getZipcode());
         }
         sql.deleteCharAt(sql.length() - 2);
         sql.append("WHERE sid = ?");
@@ -66,10 +70,10 @@ public class ServiceLocationRepository {
                 "WHERE sid = ?";
         return jdbcTemplate.queryForObject(sql, new Object[]{sId}, (rs, rowNum) ->
                 new ServiceLocation(
-                        rs.getInt("s_id"),
-                        rs.getInt("c_id"),
+                        rs.getInt("sid"),
+                        rs.getInt("cid"),
                         rs.getString("address"),
-                        rs.getTimestamp("move_in_date").toLocalDateTime(),
+                        rs.getDate("move_in_date").toLocalDate(),
                         rs.getInt("size"),
                         rs.getInt("bedroom_num"),
                         rs.getInt("occupant_num"),
@@ -83,10 +87,10 @@ public class ServiceLocationRepository {
                 "WHERE cid = ?";
         return jdbcTemplate.query(sql, new Object[]{customerId}, (rs, rowNum) ->
                 new ServiceLocation(
-                        rs.getInt("s_id"),
-                        rs.getInt("c_id"),
+                        rs.getInt("sid"),
+                        rs.getInt("cid"),
                         rs.getString("address"),
-                        rs.getTimestamp("move_in_date").toLocalDateTime(),
+                        rs.getDate("move_in_date").toLocalDate(),
                         rs.getInt("size"),
                         rs.getInt("bedroom_num"),
                         rs.getInt("occupant_num"),
