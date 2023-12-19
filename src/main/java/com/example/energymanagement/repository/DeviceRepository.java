@@ -76,4 +76,19 @@ public class DeviceRepository {
         params.add(device.getDid());
         return jdbcTemplate.update(sql.toString(), params.toArray());
     }
+
+    public int insertDevice(Device device) {
+        String sql = "INSERT INTO device (description, tid, sid) VALUES (?, ?, ?)";
+        return jdbcTemplate.update(sql, device.getDescription(), device.getTid(), device.getSid());
+    }
+
+    public int deleteDeviceById(Integer deviceId) {
+        String sql = "DELETE FROM device WHERE did = ?";
+        return jdbcTemplate.update(sql, deviceId);
+    }
+
+    public int deleteDeviceBySid(Integer sid) {
+        String sql = "DELETE FROM device WHERE sid = ?";
+        return jdbcTemplate.update(sql, sid);
+    }
 }

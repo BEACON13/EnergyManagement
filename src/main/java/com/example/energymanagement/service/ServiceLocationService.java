@@ -2,6 +2,7 @@ package com.example.energymanagement.service;
 
 import com.example.energymanagement.model.domain.ServiceLocation;
 import com.example.energymanagement.model.param.ServiceLocationBaseParam;
+import com.example.energymanagement.repository.DeviceRepository;
 import com.example.energymanagement.repository.ServiceLocationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,9 @@ public class ServiceLocationService {
 
     @Autowired
     private ServiceLocationRepository serviceLocationRepository;
+
+    @Autowired
+    private DeviceRepository deviceRepository;
 
     public List<ServiceLocation> listServiceLocationByCustomerId(Integer customerId) {
         return serviceLocationRepository.listByCustomerId(customerId);
@@ -33,8 +37,7 @@ public class ServiceLocationService {
     }
 
     public boolean deleteServiceLocation(Integer sId) {
-
-        //todo: delete all devices in this service location
+        deviceRepository.deleteDeviceBySid(sId);
         return serviceLocationRepository.deleteServiceLocation(sId);
     }
 

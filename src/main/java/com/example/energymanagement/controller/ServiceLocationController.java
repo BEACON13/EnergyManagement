@@ -61,6 +61,9 @@ public class ServiceLocationController {
      */
     @PostMapping("/update")
     public ResponseEntity<?> updateServiceLocation(@RequestBody ServiceLocationBaseParam param) {
+        if (param.getSId() == null) {
+            return ResponseEntity.badRequest().body("Service location ID is required");
+        }
         if (serviceLocationService.updateServiceLocation(param) == 0) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Update failed");
         }
