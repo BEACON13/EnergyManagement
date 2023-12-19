@@ -26,4 +26,16 @@ public class ServiceLocationService {
         return serviceLocationRepository.insertServiceLocation(serviceLocation);
     }
 
+    public int updateServiceLocation(ServiceLocationBaseParam param) {
+        ServiceLocation serviceLocation = new ServiceLocation();
+        copyProperties(param, serviceLocation);
+        return serviceLocationRepository.updateServiceLocation(serviceLocation);
+    }
+
+    public boolean deleteServiceLocation(Integer sId) {
+
+        //todo: delete all devices in this service location
+        return serviceLocationRepository.deleteServiceLocation(sId);
+    }
+
 }

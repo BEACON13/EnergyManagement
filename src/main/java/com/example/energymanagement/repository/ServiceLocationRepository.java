@@ -27,7 +27,7 @@ public class ServiceLocationRepository {
         return true;
     }
 
-    public void updateServiceLocation(ServiceLocation serviceLocation) {
+    public int updateServiceLocation(ServiceLocation serviceLocation) {
         List<Object> params = new ArrayList<>();
         StringBuilder sql = new StringBuilder("UPDATE service_location SET ");
         if (serviceLocation.getCId() != null) {
@@ -61,14 +61,14 @@ public class ServiceLocationRepository {
         sql.deleteCharAt(sql.length() - 2);
         sql.append("WHERE sid = ?");
         params.add(serviceLocation.getSId());
-        jdbcTemplate.update(sql.toString(), params.toArray());
+        return jdbcTemplate.update(sql.toString(), params.toArray());
     }
 
     public ServiceLocation getServiceLocationBySId(Integer sId) {
         String sql = "SELECT * " +
                 "FROM service_location " +
                 "WHERE sid = ?";
-        return jdbcTemplate.queryForObject(sql, new Object[]{sId}, (rs, rowNum) ->
+        List<ServiceLocation> serviceLocations = jdbcTemplate.query(sql, new Object[]{sId}, (rs, rowNum) ->
                 new ServiceLocation(
                         rs.getInt("sid"),
                         rs.getInt("cid"),
@@ -79,6 +79,11 @@ public class ServiceLocationRepository {
                         rs.getInt("occupant_num"),
                         rs.getString("zipcode")
                 ));
+        if (serviceLocations.isEmpty()) {
+            return null;
+        } else {
+            return serviceLocations.get(0);
+        }
     }
 
     public List<ServiceLocation> listByCustomerId(Integer customerId) {
@@ -96,5 +101,12 @@ public class ServiceLocationRepository {
                         rs.getInt("occupant_num"),
                         rs.getString("zipcode")
                 ));
+    }
+
+    public boolean deleteServiceLocation(Integer sId) {
+        String sql = "DELETE FROM service_location " +
+                "WHERE sid = ?";
+        jdbcTemplate.update(sql, sId);
+        return true;
     }
 }

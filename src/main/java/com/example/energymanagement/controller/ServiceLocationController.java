@@ -5,6 +5,7 @@ import com.example.energymanagement.model.param.ServiceLocationBaseParam;
 import com.example.energymanagement.service.ServiceLocationService;
 import com.example.energymanagement.util.TokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -45,9 +46,24 @@ public class ServiceLocationController {
     public ResponseEntity<?> insertServiceLocation(@RequestHeader("Authorization") String token, @RequestBody ServiceLocationBaseParam param) {
         Integer id = TokenUtil.getUserInfoFromToken(token);
         param.setCId(id);
-        serviceLocationService.insertServiceLocation(param);
-        return ResponseEntity.ok().build();
+        if (serviceLocationService.insertServiceLocation(param)) {
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Insert failed");
     }
 
 
+    /**
+     * update a service location
+     *
+     * @param param the param of the service location
+     * @return the result of the update
+     */
+    @PostMapping("/update")
+    public ResponseEntity<?> updateServiceLocation(@RequestBody ServiceLocationBaseParam param) {
+        if (serviceLocationService.updateServiceLocation(param) == 0) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Update failed");
+        }
+        return ResponseEntity.ok().build();
+    }
 }
