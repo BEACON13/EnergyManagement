@@ -1,14 +1,19 @@
 package com.example.energymanagement.service;
 
 import com.example.energymanagement.model.domain.Device;
+import com.example.energymanagement.model.domain.EnergyPrice;
 import com.example.energymanagement.model.domain.Event;
+import com.example.energymanagement.model.vo.EnergyBillVO;
 import com.example.energymanagement.model.vo.EnergyDailyUseVO;
+import com.example.energymanagement.repository.EnergyPriceRepository;
 import com.example.energymanagement.repository.EventRepository;
+import com.example.energymanagement.repository.ServiceLocationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 @Service
@@ -20,22 +25,23 @@ public class EventService {
     @Autowired
     private DeviceService deviceService;
 
-    public List<EnergyDailyUseVO> listEnergyDailyUseBySid(Integer sid, LocalDate startDate, LocalDate endDate) {
-        List<Integer> ids = deviceService.listDeviceBySid(sid).stream().map(Device::getDid).toList();
-        List<List<Event>> events = new ArrayList<>();
-        for (Integer id : ids) {
-            List<Event> eventList = eventRepository.listEventByDate(startDate, endDate, id);
-            events.add(eventList);
-        }
-        List<EnergyDailyUseVO> energyDailyUseVOS = new ArrayList<>();
+    @Autowired
+    private EnergyPriceRepository energyPriceRepository;
 
+    @Autowired
+    private ServiceLocationRepository serviceLocationRepository;
+
+    public List<EnergyDailyUseVO> listEnergyDailyUseBySid(Integer sid, LocalDate startDate, LocalDate endDate) {
+        List<Event> events = listEnergyUseEventBySid(sid, startDate, endDate);
+        List<EnergyDailyUseVO> energyDailyUseVOS = new ArrayList<>();
         for (LocalDate date = startDate; date.isBefore(endDate); date = date.plusDays(1)) {
             double energyUse = 0;
-            for (List<Event> event : events) {
-                for (Event e : event) {
-                    if (e.getTime().toLocalDate().equals(date)) {
-                        energyUse += e.getValue();
-                    }
+            Iterator<Event> iterator = events.iterator();
+            while (iterator.hasNext()) {
+                Event event = iterator.next();
+                if (event.getTime().toLocalDate().equals(date)) {
+                    energyUse += event.getValue();
+                    iterator.remove();
                 }
             }
             EnergyDailyUseVO energyDailyUseVO = new EnergyDailyUseVO();
@@ -47,21 +53,16 @@ public class EventService {
     }
 
     public List<EnergyDailyUseVO> listEnergyTimeUseBySid(Integer sid, LocalDate startDate) {
-        List<Integer> ids = deviceService.listDeviceBySid(sid).stream().map(Device::getDid).toList();
-        List<List<Event>> events = new ArrayList<>();
-        for (Integer id : ids) {
-            List<Event> eventList = eventRepository.listEventByDate(startDate, startDate, id);
-            events.add(eventList);
-        }
+        List<Event> events = listEnergyUseEventBySid(sid, startDate, startDate);
         List<EnergyDailyUseVO> energyDailyUseVOS = new ArrayList<>();
-
         for (int i = 0; i < 24; i++) {
             double energyUse = 0;
-            for (List<Event> event : events) {
-                for (Event e : event) {
-                    if (e.getTime().toLocalTime().getHour() == i) {
-                        energyUse += e.getValue();
-                    }
+            Iterator<Event> iterator = events.iterator();
+            while (iterator.hasNext()) {
+                Event event = iterator.next();
+                if (event.getTime().toLocalTime().getHour() == i) {
+                    energyUse += event.getValue();
+                    iterator.remove();
                 }
             }
             EnergyDailyUseVO energyDailyUseVO = new EnergyDailyUseVO();
@@ -69,5 +70,53 @@ public class EventService {
             energyDailyUseVOS.add(energyDailyUseVO);
         }
         return energyDailyUseVOS;
+    }
+
+    public List<EnergyBillVO> listEnergyBillBySid(Integer sid, LocalDate startDate, LocalDate endDate) {
+        String zipcode = serviceLocationRepository.getZipcodeBySid(sid);
+        List<EnergyPrice> energyPrices = new ArrayList<>();
+        for (LocalDate date = startDate; date.isBefore(endDate); date = date.plusDays(1)) {
+            List<EnergyPrice> energyPriceByDate = energyPriceRepository.getEnergyPriceByDate(date, zipcode);
+            energyPrices.addAll(energyPriceByDate);
+        }
+        List<Event> events = listEnergyUseEventBySid(sid, startDate, endDate);
+        List<EnergyBillVO> energyBillVOS = new ArrayList<>();
+        for (LocalDate date = startDate; date.isBefore(endDate); date = date.plusDays(1)) {
+            double price = 0;
+            Iterator<Event> iterator = events.iterator();
+            while (iterator.hasNext()) {
+                Event event = iterator.next();
+                if (event.getTime().toLocalDate().equals(date)) {
+                    price += getBill(event, energyPrices);
+                    iterator.remove();
+                }
+            }
+            EnergyBillVO energyBillVO = new EnergyBillVO();
+            energyBillVO.setDate(date);
+            energyBillVO.setEnergyBill(price);
+            energyBillVOS.add(energyBillVO);
+        }
+        return energyBillVOS;
+    }
+
+    public Double getBill(Event event, List<EnergyPrice> energyPrices) {
+        double bill = 0;
+        for (EnergyPrice energyPrice : energyPrices) {
+            if (event.getTime().isAfter(energyPrice.getStartTime()) && event.getTime().isBefore(energyPrice.getEndTime())) {
+                bill = event.getValue() * energyPrice.getPrice();
+                break;
+            }
+        }
+        return bill;
+    }
+
+    public List<Event> listEnergyUseEventBySid(Integer sid, LocalDate startDate, LocalDate endDate) {
+        List<Integer> ids = deviceService.listDeviceBySid(sid).stream().map(Device::getDid).toList();
+        List<Event> events = new ArrayList<>();
+        for (Integer id : ids) {
+            List<Event> eventList = eventRepository.listEnergyUseEventByDate(startDate, endDate, id);
+            events.addAll(eventList);
+        }
+        return events;
     }
 }

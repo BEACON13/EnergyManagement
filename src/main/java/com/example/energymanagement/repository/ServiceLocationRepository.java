@@ -109,4 +109,11 @@ public class ServiceLocationRepository {
         jdbcTemplate.update(sql, sId);
         return true;
     }
+
+    public String getZipcodeBySid(Integer sId) {
+        String sql = "SELECT zipcode " +
+                "FROM service_location " +
+                "WHERE sid = ?";
+        return jdbcTemplate.queryForObject(sql, new Object[]{sId}, String.class);
+    }
 }

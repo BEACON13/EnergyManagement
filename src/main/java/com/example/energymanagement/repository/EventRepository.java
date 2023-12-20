@@ -18,8 +18,13 @@ public class EventRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public List<Event> listEventByDate(LocalDate startDate, LocalDate endDate, Integer did) {
-        String sql = "SELECT * FROM Event WHERE did = ? AND time >= ? AND time <= ?";
+    public List<Event> listEnergyUseEventByDate(LocalDate startDate, LocalDate endDate, Integer did) {
+        String sql = "SELECT * " +
+                "FROM Event " +
+                "WHERE did = ? " +
+                "AND time >= ? " +
+                "AND time <= ?" +
+                "AND event_type = 'energy use'";
         return jdbcTemplate.query(sql, new Object[]{did, startDate, endDate}, (rs, rowNum) ->
                 new Event(
                         rs.getInt("eid"),

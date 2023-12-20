@@ -5,7 +5,7 @@ import lombok.Data;
 import java.time.LocalDate;
 
 @Data
-public class EnergyDailyUseParam {
+public class EnergyUseParam {
 
     private Integer sid;
 
