@@ -15,6 +15,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class EventService {
@@ -79,7 +80,24 @@ public class EventService {
             List<EnergyPrice> energyPriceByDate = energyPriceRepository.getEnergyPriceByDate(date, zipcode);
             energyPrices.addAll(energyPriceByDate);
         }
+        List<EnergyPrice> collect = energyPrices.stream().distinct().collect(Collectors.toList());
         List<Event> events = listEnergyUseEventBySid(sid, startDate, endDate);
+        return getEnergyBillVOS(startDate, endDate, collect, events);
+    }
+
+    public List<EnergyBillVO> listEnergyBillByDid(Integer sid, Integer did, LocalDate startDate, LocalDate endDate) {
+        String zipcode = serviceLocationRepository.getZipcodeBySid(sid);
+        List<EnergyPrice> energyPrices = new ArrayList<>();
+        for (LocalDate date = startDate; date.isBefore(endDate); date = date.plusDays(1)) {
+            List<EnergyPrice> energyPriceByDate = energyPriceRepository.getEnergyPriceByDate(date, zipcode);
+            energyPrices.addAll(energyPriceByDate);
+        }
+        List<EnergyPrice> collect = energyPrices.stream().distinct().collect(Collectors.toList());
+        List<Event> events = eventRepository.listEnergyUseEventByDate(startDate, endDate, did);
+        return getEnergyBillVOS(startDate, endDate, collect, events);
+    }
+
+    private List<EnergyBillVO> getEnergyBillVOS(LocalDate startDate, LocalDate endDate, List<EnergyPrice> prices, List<Event> events) {
         List<EnergyBillVO> energyBillVOS = new ArrayList<>();
         for (LocalDate date = startDate; date.isBefore(endDate); date = date.plusDays(1)) {
             double price = 0;
@@ -87,7 +105,7 @@ public class EventService {
             while (iterator.hasNext()) {
                 Event event = iterator.next();
                 if (event.getTime().toLocalDate().equals(date)) {
-                    price += getBill(event, energyPrices);
+                    price += getBill(event, prices);
                     iterator.remove();
                 }
             }

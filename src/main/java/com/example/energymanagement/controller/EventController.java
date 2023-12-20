@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.List;
 
 @Controller
-@RequestMapping("/energy")
+@RequestMapping("/event")
 public class EventController {
 
     @Autowired
@@ -56,5 +56,16 @@ public class EventController {
         return ResponseEntity.ok().body(vos);
     }
 
+    @PostMapping("/listEnergyBillByDevice")
+    public ResponseEntity<?> listEnergyBillByDevice(@RequestBody EnergyUseParam param) {
+        if (param.getDid() == null || param.getSid() == null || param.getStartDate() == null || param.getEndDate() == null) {
+            return ResponseEntity.badRequest().body("Invalid parameter");
+        }
+        List<EnergyBillVO> vos = eventService.listEnergyBillByDid(param.getSid(), param.getDid(), param.getStartDate(), param.getEndDate());
+        if (vos == null) {
+            return ResponseEntity.badRequest().body("No data");
+        }
+        return ResponseEntity.ok().body(vos);
+    }
 
 }

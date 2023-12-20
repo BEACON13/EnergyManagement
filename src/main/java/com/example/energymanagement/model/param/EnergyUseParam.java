@@ -12,4 +12,6 @@ public class EnergyUseParam {
     private LocalDate startDate;
 
     private LocalDate endDate;
+
+    private Integer did;
 }
