@@ -19,9 +19,24 @@ public class EventController {
     @Autowired
     private EventService eventService;
 
-    @PostMapping("/listEnergyDailyUse")
+    @PostMapping("/listEnergyDailyUseByLocation")
     public ResponseEntity<?> listEnergyDailyUse(@RequestBody EnergyDailyUseParam param) {
-        List<EnergyDailyUseVO> vos = eventService.listEnergyDailyUseByTid(param.getSid(), param.getStartDate(), param.getEndDate());
+        if (param.getSid() == null || param.getStartDate() == null || param.getEndDate() == null) {
+            return ResponseEntity.badRequest().body("Invalid parameter");
+        }
+        List<EnergyDailyUseVO> vos = eventService.listEnergyDailyUseBySid(param.getSid(), param.getStartDate(), param.getEndDate());
+        if (vos == null) {
+            return ResponseEntity.badRequest().body("No data");
+        }
+        return ResponseEntity.ok().body(vos);
+    }
+
+    @PostMapping("/listEnergyTimeUseByLocation")
+    public ResponseEntity<?> listEnergyTimeUse(@RequestBody EnergyDailyUseParam param) {
+        if (param.getSid() == null || param.getStartDate() == null) {
+            return ResponseEntity.badRequest().body("Invalid parameter");
+        }
+        List<EnergyDailyUseVO> vos = eventService.listEnergyTimeUseBySid(param.getSid(), param.getStartDate());
         if (vos == null) {
             return ResponseEntity.badRequest().body("No data");
         }
