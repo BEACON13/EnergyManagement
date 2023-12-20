@@ -19,7 +19,7 @@ public class ServiceLocationRepository {
     }
 
     public boolean insertServiceLocation(ServiceLocation serviceLocation) {
-        String sql = "INSERT INTO service_location (cid,address,move_in_date,size,bedroom_num,occupant_num,zipcode) " +
+        String sql = "INSERT INTO Service_location (cid,address,move_in_date,size,bedroom_num,occupant_num,zipcode) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?)";
         jdbcTemplate.update(sql, serviceLocation.getCId(), serviceLocation.getAddress(), serviceLocation.getMoveInDate(),
                 serviceLocation.getSize(), serviceLocation.getBedroomNum(), serviceLocation.getOccupantNum(),
@@ -29,7 +29,7 @@ public class ServiceLocationRepository {
 
     public int updateServiceLocation(ServiceLocation serviceLocation) {
         List<Object> params = new ArrayList<>();
-        StringBuilder sql = new StringBuilder("UPDATE service_location SET ");
+        StringBuilder sql = new StringBuilder("UPDATE Service_location SET ");
         if (serviceLocation.getCId() != null) {
             sql.append("cid = ?, ");
             params.add(serviceLocation.getCId());
@@ -66,7 +66,7 @@ public class ServiceLocationRepository {
 
     public ServiceLocation getServiceLocationBySId(Integer sId) {
         String sql = "SELECT * " +
-                "FROM service_location " +
+                "FROM Service_location " +
                 "WHERE sid = ?";
         List<ServiceLocation> serviceLocations = jdbcTemplate.query(sql, new Object[]{sId}, (rs, rowNum) ->
                 new ServiceLocation(
@@ -88,7 +88,7 @@ public class ServiceLocationRepository {
 
     public List<ServiceLocation> listByCustomerId(Integer customerId) {
         String sql = "SELECT * " +
-                "FROM service_location " +
+                "FROM Service_location " +
                 "WHERE cid = ?";
         return jdbcTemplate.query(sql, new Object[]{customerId}, (rs, rowNum) ->
                 new ServiceLocation(
@@ -104,7 +104,7 @@ public class ServiceLocationRepository {
     }
 
     public boolean deleteServiceLocation(Integer sId) {
-        String sql = "DELETE FROM service_location " +
+        String sql = "DELETE FROM Service_location " +
                 "WHERE sid = ?";
         jdbcTemplate.update(sql, sId);
         return true;
@@ -112,7 +112,7 @@ public class ServiceLocationRepository {
 
     public String getZipcodeBySid(Integer sId) {
         String sql = "SELECT zipcode " +
-                "FROM service_location " +
+                "FROM Service_location " +
                 "WHERE sid = ?";
         return jdbcTemplate.queryForObject(sql, new Object[]{sId}, String.class);
     }
